@@ -105,7 +105,7 @@ export default function IndexPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center">
+    <div className="min-h-screen flex items-center justify-center flex-col">
       <section className="py-12 container">
       <div className="max-w-full  md:pb-4 mx-auto">
       {files.length > 0 && (
