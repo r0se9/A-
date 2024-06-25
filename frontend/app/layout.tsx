@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import { SiteHeader } from "@/components/site-header"
+import Head from 'next/head';
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 
@@ -32,23 +33,21 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
-      <html lang="en" suppressHydrationWarning>
-        <head />
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="relative flex min-h-screen flex-col">
-              {/* <SiteHeader /> */}
-              <div className="flex-1">{children}</div>
-            </div>
-            <TailwindIndicator />
-          </ThemeProvider>
-        </body>
-      </html>
+      {/* Use <Head /> here for adding elements within the head of the document */}
+      <Head>
+        {/* Example: Set the default title of the website */}
+        <title>{siteConfig.name}</title>
+        {/* Further <Head /> usage like meta tags could go here */}
+      </Head>
+      {/* Direct usage of <body> attributes should be moved to _document.js or managed via <Script /> component */}
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <div className="relative flex min-h-screen flex-col bg-background font-sans antialiased">
+          {/* <SiteHeader /> Uncomment or replace with actual component */}
+          <div className="flex-1">{children}</div>
+          {/* TailwindIndicator at the bottom */}
+          <TailwindIndicator />
+        </div>
+      </ThemeProvider>
     </>
-  )
+  );
 }
