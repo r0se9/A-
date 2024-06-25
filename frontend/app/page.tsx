@@ -30,7 +30,7 @@ export default function IndexPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/upload",
+        "http://62.146.225.35:8000/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -50,7 +50,7 @@ export default function IndexPage() {
     const interval = setInterval(async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/status/${taskId}`
+          `http://62.146.225.35:8000/status/${taskId}`
         )
         console.log("response for checkStatus: " + JSON.stringify(response))
         setProgress(response.data.progress)

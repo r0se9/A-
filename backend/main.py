@@ -14,7 +14,7 @@ app = FastAPI()
 # CORS middleware configuration to allow all origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Adjust as per your frontend URL
+    allow_origins=["http://62.146.225.35:3000"],  # Adjust as per your frontend URL
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
@@ -64,7 +64,7 @@ def get_status(task_id: str):
     task = celery_app.AsyncResult(task_id)
 
     if task.state == states.SUCCESS:
-        return {"status": "completed", "video_url":"http://localhost:8000/videos/preparedvideo.mp4"}
+        return {"status": "completed", "video_url":"http://62.146.225.35:8000/videos/preparedvideo.mp4"}
     elif task.state == states.STARTED:
         # If task is still in progress, return the progress percentage
         return {"status": "processing", "progress": task.info.get('progress', 0)}
