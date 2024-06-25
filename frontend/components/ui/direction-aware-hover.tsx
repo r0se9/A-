@@ -7,14 +7,14 @@ import React from "react";
 
 export const DirectionAwareHover = ({
   imageUrl,
-  children,
+  children = null,
   childrenClassName,
   imageClassName,
   className,
   onClick,
 }: {
   imageUrl: string;
-  children: React.ReactNode | string;
+  children: React.ReactNode;
   childrenClassName?: string;
   imageClassName?: string;
   className?: string;

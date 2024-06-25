@@ -119,7 +119,7 @@ export default function IndexPage() {
                   key={index} className="sm:basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                 >
                   <div className="relative  flex items-center justify-center">
-                    <DirectionAwareHover onClick={()=>handleImageSelect(URL.createObjectURL(file))} imageUrl={URL.createObjectURL(file)} />
+                    <DirectionAwareHover children="" onClick={()=>handleImageSelect(URL.createObjectURL(file))} imageUrl={URL.createObjectURL(file)} />
                     {/* <Image
                       src={URL.createObjectURL(file)}
                       alt={`Selected Image ${index + 1}`}
@@ -146,7 +146,9 @@ export default function IndexPage() {
               <div className="flex flex-col gap-5 mt-5">
                 <Card className="w-full">
                   <div className="relative  flex items-center justify-center">
-                    <DirectionAwareHover imageUrl={selectedImage} />
+                    <DirectionAwareHover imageUrl={selectedImage}>
+                     <></>
+                    </DirectionAwareHover>
                   </div>
                 </Card>
                 {/* <Image
