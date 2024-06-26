@@ -79,22 +79,32 @@ export default function IndexPage() {
     }
   };
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const filesList = e.target.files
-    console.log("File changed", filesList)
+    const filesList = e.target.files;
+    console.log("File changed", filesList);
     if (filesList && filesList.length > 0) {
-      const newFilesArray = Array.from(filesList)
-      const newFileUrls = newFilesArray.map(file => URL.createObjectURL(file))
-      
-      // Set new files to the state
-      setFiles(prevState => [...prevState, ...newFilesArray])
-      // Save the URLs to the state to avoid creating them on each render
-      setImageUrls(prevUrls => [...prevUrls, ...newFileUrls]) // Corrected Line
-      
-      // Optionally, focus on the last uploaded image
-      const lastImageUrl = newFileUrls[newFileUrls.length - 1]
-      setSelectedImage(lastImageUrl)
+        const newFilesArray = Array.from(filesList);
+
+        setFiles(prevFiles => [...prevFiles, ...newFilesArray]); // Update state to include new files
     }
-  }
+  };
+  useEffect(() => {
+    // Generate URLs for the uploaded files
+    setImageUrls(files.map(file => URL.createObjectURL(file)));
+
+    // Automatically select the first image if none is selected
+    // This ensures an image is selected initially after uploads
+    if (files.length > 0 && !selectedImage) {
+        setSelectedImage(URL.createObjectURL(files[files.length - 1]));
+    }
+  }, [files, selectedImage]);
+  useEffect(() => {
+    const urls = files.map(file => URL.createObjectURL(file));
+    setImageUrls(urls);
+
+    if (files.length > 0) {
+        setSelectedImage(urls[urls.length - 1]); // Always set to the last uploaded file
+    }
+}, [files]);
 
   const handleContextMenu = (
     e: React.MouseEvent<HTMLVideoElement, MouseEvent>
