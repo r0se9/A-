@@ -1,50 +1,35 @@
 "use client"
-import React, { ChangeEvent, useState, useCallback } from "react"
+import React, { ChangeEvent, useState, useCallback, useEffect } from "react"
 import Image from "next/image"
 import axios from "axios"
-import Autoplay from "embla-carousel-autoplay";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import { DirectionAwareHover } from "../components/ui/direction-aware-hover";
+
 import { Card } from "../components/ui/card";
+import Carousel from './carousel'
+import { DirectionAwareHover } from "../components/ui/direction-aware-hover";
 
 export default function IndexPage() {
+  const [fetching, setFetching] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [progress, setProgress] = useState<number>(0)
-  const [videoUrl, setVideoUrl] = useState<string | null>(null)
+  const [videoUrl, setVideoUrl] =  useState<string | null>(null)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [imagesUrls, setImageUrls]=useState<string[]>([])
   const [isAutoplay, setIsAutoplay] = useState(true);
+
+  useEffect(() => {
+    // This cleanup function runs when the component unmounts or files change
+    return () => {
+      imagesUrls.forEach(url => URL.revokeObjectURL(url)); // Revoke URLs to clean up memory
+    };
+  }, [imagesUrls]); 
+
+  useEffect(() => {
+    setImageUrls(files.map(file => URL.createObjectURL(file)));
+  }, [files]);
 
   const handleImageSelect = useCallback((imageUrl: string) => {
     setSelectedImage(imageUrl);
   }, []);
-
-  const uploadFile = async (file: File) => {
-    const formData = new FormData()
-    formData.append("file", file)
-
-    try {
-      const response = await axios.post(
-        "http://62.146.225.35:8000/upload",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      )
-      console.log("Uploading file")
-      const taskId = response.data.task_id
-      console.log("response for uploadFile: " + JSON.stringify(response))
-      checkStatus(taskId)
-    } catch (error) {
-      console.error("Error uploading file:", error)
-      // Handle error
-    }
-  }
 
   const checkStatus = async (taskId: string) => {
     const interval = setInterval(async () => {
@@ -53,10 +38,13 @@ export default function IndexPage() {
           `http://62.146.225.35:8000/status/${taskId}`
         )
         console.log("response for checkStatus: " + JSON.stringify(response))
-        setProgress(response.data.progress)
+        if(response.data.progress !== undefined){ 
+          setProgress(response.data.progress);
+        }
         if (response.data.status === "completed") {
           clearInterval(interval)
           setVideoUrl(response.data.video_url)
+          setProgress(100)
         }
       } catch (error) {
         console.error("Error checking status:", error)
@@ -66,15 +54,45 @@ export default function IndexPage() {
     }, 1000)
   }
 
+  const uploadFile = async (file: File) => {
+    setFetching(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await axios.post(
+            "http://62.146.225.35:8000/upload",
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        );
+        console.log("Uploading file");
+        const taskId = response.data.task_id;
+        console.log("response for uploadFile: " + JSON.stringify(response));
+        checkStatus(taskId);
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        // Handle error
+    } finally {
+        setFetching(false);
+    }
+  };
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const filesList = e.target.files
     console.log("File changed", filesList)
     if (filesList && filesList.length > 0) {
-      const filesArray = Array.from(filesList)
-      setFiles([...files, ...filesArray])
-      const lastFile = filesArray[filesArray.length - 1]
-      const imageUrl = URL.createObjectURL(lastFile)
-      setSelectedImage(imageUrl)
+      const newFilesArray = Array.from(filesList)
+      const newFileUrls = newFilesArray.map(file => URL.createObjectURL(file))
+      
+      // Set new files to the state
+      setFiles(prevState => [...prevState, ...newFilesArray])
+      // Save the URLs to the state to avoid creating them on each render
+      setImageUrls(prevUrls => [...prevUrls, ...newFileUrls]) // Corrected Line
+      
+      // Optionally, focus on the last uploaded image
+      const lastImageUrl = newFileUrls[newFileUrls.length - 1]
+      setSelectedImage(lastImageUrl)
     }
   }
 
@@ -91,7 +109,9 @@ export default function IndexPage() {
   }
 
   const handleUpload = () => {
-    if (files.length === 0) return
+    if (files.length === 0 || fetching) return
+    setVideoUrl(null)
+    setProgress(0)
     const lastFile = files[files.length - 1]
     uploadFile(lastFile)
   }
@@ -110,33 +130,7 @@ export default function IndexPage() {
       <div className="max-w-full  md:pb-4 mx-auto">
       {files.length > 0 && (
         <div className="flex flex-wrap lg:px-0 sm:px-8 px-8">
-          <Carousel plugins={isAutoplay ? [Autoplay({ delay: 1500 })] : []} className="w-full">
-            <CarouselContent>
-              {files.map((file, index) => (
-                <CarouselItem
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  key={index} className="sm:basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-                >
-                  <div className="relative  flex items-center justify-center">
-                    <DirectionAwareHover onClick={()=>handleImageSelect(URL.createObjectURL(file))} imageUrl={URL.createObjectURL(file)}>
-                    {/* <Image
-                      src={URL.createObjectURL(file)}
-                      alt={`Selected Image ${index + 1}`}
-                      layout="responsive"
-                      width={200}
-                      height={200}
-                      className="rounded-xl shadow-lg cursor-pointer object-cover"
-                    /> */}
-                      <></>
-                    </DirectionAwareHover>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <Carousel isAutoPlay={isAutoplay} files={files} handleMouseEnter={handleMouseEnter} handleMouseLeave={handleMouseLeave} handleImageSelect={handleImageSelect} />
         </div>
       )}
       </div>
