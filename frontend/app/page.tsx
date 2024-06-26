@@ -17,9 +17,8 @@ export default function IndexPage() {
   const [isAutoplay, setIsAutoplay] = useState(true);
 
   useEffect(() => {
-    // This cleanup function runs when the component unmounts or files change
     return () => {
-      imagesUrls.forEach(url => URL.revokeObjectURL(url)); // Revoke URLs to clean up memory
+      imagesUrls.forEach(url => URL.revokeObjectURL(url));
     };
   }, [imagesUrls]); 
 
@@ -48,7 +47,6 @@ export default function IndexPage() {
         }
       } catch (error) {
         console.error("Error checking status:", error)
-        // Handle error
         clearInterval(interval)
       }
     }, 1000)
@@ -84,15 +82,12 @@ export default function IndexPage() {
     if (filesList && filesList.length > 0) {
         const newFilesArray = Array.from(filesList);
 
-        setFiles(prevFiles => [...prevFiles, ...newFilesArray]); // Update state to include new files
+        setFiles(prevFiles => [...prevFiles, ...newFilesArray]); 
     }
   };
   useEffect(() => {
-    // Generate URLs for the uploaded files
     setImageUrls(files.map(file => URL.createObjectURL(file)));
 
-    // Automatically select the first image if none is selected
-    // This ensures an image is selected initially after uploads
     if (files.length > 0 && !selectedImage) {
         setSelectedImage(URL.createObjectURL(files[files.length - 1]));
     }
@@ -102,20 +97,20 @@ export default function IndexPage() {
     setImageUrls(urls);
 
     if (files.length > 0) {
-        setSelectedImage(urls[urls.length - 1]); // Always set to the last uploaded file
+        setSelectedImage(urls[urls.length - 1]); 
     }
 }, [files]);
 
   const handleContextMenu = (
     e: React.MouseEvent<HTMLVideoElement, MouseEvent>
   ) => {
-    e.preventDefault() // Prevent default context menu (right-click menu)
+    e.preventDefault() 
   }
 
   const handleControlsClick = (
     e: React.MouseEvent<HTMLVideoElement, MouseEvent>
   ) => {
-    e.preventDefault() // Prevent clicks on the video controls (play, pause, download button)
+    e.preventDefault() 
   }
 
   const handleUpload = () => {
@@ -156,13 +151,6 @@ export default function IndexPage() {
                     </DirectionAwareHover>
                   </div>
                 </Card>
-                {/* <Image
-                  src={selectedImage}
-                  alt="Selected Image"
-                  height={500}
-                  width={500}
-                  className="rounded-xl shadow-lg cursor-pointer"
-                /> */}
                 {!videoUrl && progress !== 0 && (
                   <div className="flex flex-col justify-center items-center gap-5">
                     <progress

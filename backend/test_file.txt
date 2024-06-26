@@ -1,0 +1,2 @@
+This is a test file to check the invalid file upload functionality in the FastAPI application.
+This file should be rejected by the upload endpoint as it is not an image file.

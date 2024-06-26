@@ -29,15 +29,7 @@ const MyCarousel = memo(function MyCarousel({isAutoPlay, files, handleMouseEnter
                 >
                   <div className="relative  flex items-center justify-center">
                     <DirectionAwareHover onClick={()=>handleImageSelect(URL.createObjectURL(file))} imageUrl={URL.createObjectURL(file)}>
-                    {/* <Image
-                      src={URL.createObjectURL(file)}
-                      alt={`Selected Image ${index + 1}`}
-                      layout="responsive"
-                      width={200}
-                      height={200}
-                      className="rounded-xl shadow-lg cursor-pointer object-cover"
-                    /> */}
-                      <></>
+                        <></>
                     </DirectionAwareHover>
                   </div>
                 </CarouselItem>
